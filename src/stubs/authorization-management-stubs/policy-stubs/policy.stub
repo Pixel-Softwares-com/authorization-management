@@ -1,0 +1,28 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Auth\Access\HandlesAuthorization;
+use App\CustomLibs\AuthorizationManagement\PolicyManagement\Policies\BasePolicy;
+use App\Exceptions\JsonException;
+
+class {{ class }} extends BasePolicy
+{
+    use HandlesAuthorization;
+
+    /**
+     * Create a new policy instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    --reading-fun--
+    --creating-fun--
+    --editing-fun--
+    --deleting-fun--
+
+}
