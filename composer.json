@@ -1,5 +1,5 @@
 {
-    "name": "MuhammedALDRUBI/authorization-management",
+    "name": "muhammedaldrubi/authorization-management",
     "description": "AuthorizationManagement package",
     "minimum-stability": "dev",
     "license": "MIT",
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^8.0|^8.1",
+        "php": "^7.3|^8.1",
         "doctrine/dbal": "^3.5",
         "fruitcake/laravel-cors": "^3.0",
         "hwi/oauth-bundle": "^1.4",
@@ -27,7 +27,13 @@
     },
     "autoload": {
         "psr-4": {
-            "AuthorizationManagement\\": "src/"
+            "AuthorizationManagement\\": "src/",
+            "AuthorizationManagement\\Commands\\": "src/Commands/",
+            "AuthorizationManagement\\Exceptions\\": "src/Exceptions/",
+            "AuthorizationManagement\\IndependentGateManagement\\": "src/IndependentGateManagement/",
+            "AuthorizationManagement\\PolicyManagement\\": "src/PolicyManagement/",
+            "AuthorizationManagement\\PermissionExaminers\\": "src/PermissionExaminers/",
+            "AuthorizationManagement\\ServiceProviders\\": "src/ServiceProviders/"
         }
     },
     "extra": {
