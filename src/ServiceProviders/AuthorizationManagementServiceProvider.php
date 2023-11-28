@@ -12,7 +12,7 @@ class AuthorizationManagementServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes(
-            [__DIR__ . "/../../config/authorization-management-config.php" => config("authorization-management-config.php") ] ,
+            [__DIR__ . "/../../config/authorization-management-config.php" => config_path("authorization-management-config.php") ] ,
             'authorization-management-config'
         );
 
