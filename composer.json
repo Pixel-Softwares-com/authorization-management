@@ -27,13 +27,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AuthorizationManagement\\": "src/",
-            "AuthorizationManagement\\Commands\\": "src/Commands/",
-            "AuthorizationManagement\\Exceptions\\": "src/Exceptions/",
-            "AuthorizationManagement\\IndependentGateManagement\\": "src/IndependentGateManagement/",
-            "AuthorizationManagement\\PolicyManagement\\": "src/PolicyManagement/",
-            "AuthorizationManagement\\PermissionExaminers\\": "src/PermissionExaminers/",
-            "AuthorizationManagement\\ServiceProviders\\": "src/ServiceProviders/"
+            "AuthorizationManagement\\": "src/"
         }
     },
     "extra": {

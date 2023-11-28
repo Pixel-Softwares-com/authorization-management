@@ -12,12 +12,12 @@ class AuthorizationManagementServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes(
-            [__DIR__ . "../../config/authorization-management-config.php" => config("authorization-management-config.php") ] ,
+            [__DIR__ . "/../../config/authorization-management-config.php" => config("authorization-management-config.php") ] ,
             'authorization-management-config'
         );
 
         $this->publishes(
-            [ __DIR__ . "../stubs/authorization-management-stubs" => app_path("/stubs/authorization-management-stubs") ] ,
+            [ __DIR__ . "/../stubs/authorization-management-stubs" => app_path("/stubs/authorization-management-stubs") ] ,
             'authorization-management-stubs'
         );
 
