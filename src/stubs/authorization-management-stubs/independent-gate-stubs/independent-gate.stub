@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use App\CustomLibs\AuthorizationManagement\independentGateManagement\IndependentGates\IndependentGate;
+use AuthorizationManagement\IndependentGateManagement\IndependentGates\IndependentGate;
 use Illuminate\Support\Facades\Gate;
 
 class {{ class }}  extends IndependentGate

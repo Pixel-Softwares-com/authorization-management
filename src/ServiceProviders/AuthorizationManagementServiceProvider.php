@@ -17,7 +17,7 @@ class AuthorizationManagementServiceProvider extends ServiceProvider
         );
 
         $this->publishes(
-            [ __DIR__ . "/../stubs/authorization-management-stubs" => app_path("/stubs/authorization-management-stubs") ] ,
+            [ __DIR__ . "/../stubs/authorization-management-stubs" => base_path("/stubs/authorization-management-stubs") ] ,
             'authorization-management-stubs'
         );
 

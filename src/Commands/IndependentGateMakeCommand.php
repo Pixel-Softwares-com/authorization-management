@@ -23,11 +23,12 @@ class IndependentGateMakeCommand extends GeneratorCommand
      * @param  string  $stub
      * @return string
      */
-    protected function resolveStubPath(string $stub): string
+    protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+        $stub = trim($stub, '/');
+        return file_exists($customPath = $this->laravel->basePath( $stub ))
             ? $customPath
-            : __DIR__.$stub;
+            : __DIR__ . "/../" . $stub;
     }
 
     /**
@@ -61,8 +62,6 @@ class IndependentGateMakeCommand extends GeneratorCommand
     {
         return $this->independentStubFolderPath . '/independent-gate.stub';
     }
-
-
 
     /**
      * @return string Overriding the parent unnecessary method

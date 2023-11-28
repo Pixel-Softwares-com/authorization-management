@@ -2,11 +2,11 @@
 
 namespace AuthorizationManagement\Commands;
 
+use Illuminate\Console\GeneratorCommand;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Foundation\Console\PolicyMakeCommand;
 use Illuminate\Support\Str;
 
-class CRUDPolicyMakeCommand extends PolicyMakeCommand
+class CRUDPolicyMakeCommand extends GeneratorCommand
 {
     protected string $customPolicyStbFolderName = "authorization-management-stubs/policy-stubs";
     protected string $customPolicyStbFolderPath = "";
@@ -30,6 +30,7 @@ class CRUDPolicyMakeCommand extends PolicyMakeCommand
      * @var string
      */
     protected $name = 'make:crud-policy';
+    protected $type = 'Policy';
 
     /**
      * The console command description.
@@ -37,6 +38,28 @@ class CRUDPolicyMakeCommand extends PolicyMakeCommand
      * @var string
      */
     protected $description = 'Making a custom policy to add crud base action methods';
+
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return $rootNamespace.'\Policies';
+    }
+
+    /**
+     * @return string Overriding the parent unnecessary method
+     *  To avoid trying to replace User namespace
+     */
+    protected function userProviderModel() : string
+    {
+        return "";
+    }
+
+    protected function resolveStubPath($stub)
+    {
+        $stub = trim($stub, '/');
+        return file_exists($customPath = $this->laravel->basePath( $stub ))
+            ? $customPath
+            : __DIR__ . "/../" . $stub;
+    }
 
     protected function setCustomPolicyStbFolderPath() : void
     {
@@ -129,43 +152,11 @@ class CRUDPolicyMakeCommand extends PolicyMakeCommand
         return $this->replaceDeletingPermissions($classStub);
     }
 
-    /**
-     * @return string Overriding the parent unnecessary method
-     *  To avoid trying to replace User namespace
-     */
-    protected function userProviderModel() : string
-    {
-        return "";
-    }
-    /**
-     * @param $stub
-     * @return string Overriding the parent unnecessary method
-     *  To avoid trying to replace User namespace
-     */
-    protected function replaceUserNamespace($stub) : string
-    {
-        return $stub;
-    }
-
-    /**
-     * @param $stub
-     * @param $model
-     * @return string
-     * Overriding the parent unnecessary method
-     * To avoid trying to replace any model (user model or the model that requires the user to be authorized to perform action on it
-     * when a model option is set by calling command ... the used stub doesn't support any model replacing
-     * so no need to do any extra logic to try to replace any model
-     */
-    protected function replaceModel($stub, $model) : string
-    {
-        return $stub;
-    }
-
     protected function askForDeletingPermissions() : self
     {
         if( $this->confirm("Do you need to check user's deleting permissions ?" ) )
         {
-            $this->deletingPermissions = $this->ask("What is the deleting permission string the user must have ?");
+            $this->deletingPermissions = $this->ask("What is the deleting permission string the user must have ?") ?? "";
         }
         return $this;
     }
@@ -174,7 +165,7 @@ class CRUDPolicyMakeCommand extends PolicyMakeCommand
     {
         if($this->confirm("Do you need to check user's editing permissions ?"  ) )
         {
-            $this->editingPermissions = $this->ask("What is the editing permission string the user must have ?");
+            $this->editingPermissions = $this->ask("What is the editing permission string the user must have ?") ?? "";
         }
         return $this;
     }
@@ -183,7 +174,7 @@ class CRUDPolicyMakeCommand extends PolicyMakeCommand
     {
         if($this->confirm("Do you need to check user's creating permissions ?" ) )
         {
-            $this->creatingPermissions = $this->ask("What is the creating permission string the user must have ?");
+            $this->creatingPermissions = $this->ask("What is the creating permission string the user must have ?") ?? "";
         }
         return $this;
     }
@@ -191,7 +182,7 @@ class CRUDPolicyMakeCommand extends PolicyMakeCommand
     {
         if($this->confirm("Do you need to check user's reading permissions ?" ) )
         {
-            $this->readingPermissions = $this->ask("What is the reading permission string the user must have ?");
+            $this->readingPermissions = $this->ask("What is the reading permission string the user must have ?") ?? "";
         }
         return $this;
     }
