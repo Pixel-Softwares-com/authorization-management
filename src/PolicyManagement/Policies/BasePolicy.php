@@ -2,9 +2,9 @@
 
 namespace AuthorizationManagement\PolicyManagement\Policies;;
 
-use AuthorizationManagement\Exceptions\JsonException;
 use AuthorizationManagement\AuthorizationElement;
 use AuthorizationManagement\PermissionExaminers\PermissionExaminer;
+use Exception;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 abstract class BasePolicy extends AuthorizationElement
@@ -15,7 +15,7 @@ abstract class BasePolicy extends AuthorizationElement
      * @param string $policyAction
      * @param string|null $modelClass
      * @return bool
-     * @throws JsonException
+     * @throws Exception
      */
     public static function check(string $policyAction , ?string $modelClass = null ) : bool
     {

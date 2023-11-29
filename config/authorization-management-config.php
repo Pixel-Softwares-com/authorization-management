@@ -2,5 +2,6 @@
 
 return [
     "policies" => [],
-    "independent_gates" => []
+    "independent_gates" => [],
+    "custom-exception-class" => ""
 ];

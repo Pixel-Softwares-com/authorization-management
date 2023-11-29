@@ -3,6 +3,8 @@
 namespace AuthorizationManagement\PermissionExaminers;
 
 use AuthorizationManagement\Exceptions\JsonException;
+use AuthorizationManagement\Helpers\Helpers;
+use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class PermissionExaminer
@@ -65,9 +67,10 @@ class PermissionExaminer
     {
         return static::$denyMessage;
     }
-    static public function getUnAuthenticatingException() : JsonException
+    static public function getUnAuthenticatingException() : Exception
     {
-        return new JsonException(static::getDenyMessage() , static::getDenyStatusCode());
+        $exceptionClass = Helpers::getExceptionClass();
+        return new $exceptionClass(static::getDenyMessage() , static::getDenyStatusCode());
     }
 
     protected function setUserProps() : void
@@ -96,7 +99,7 @@ class PermissionExaminer
 
     /**
      * @return bool
-     * @throws JsonException
+     * @throws Exception
      */
     public function hasPermissionsOrFail() : bool
     {
