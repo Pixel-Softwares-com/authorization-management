@@ -2,14 +2,15 @@
 
 namespace AuthorizationManagement\PermissionExaminers;
 
-use AuthorizationManagement\Exceptions\JsonException;
+
 use AuthorizationManagement\Helpers\Helpers;
+use AuthorizationManagement\Interfaces\HasAuthorizablePermissions;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 
 class PermissionExaminer
 {
-    protected null |  Authenticatable $loggedUser  = null;
+    protected Authenticatable $loggedUser  = null;
     protected array $userPermissions = [];
     protected array $permissionsToControl = [];
     static protected string $denyMessage = "You don't have the permission for browsing this page !";
@@ -67,16 +68,58 @@ class PermissionExaminer
     {
         return static::$denyMessage;
     }
+
     static public function getUnAuthenticatingException() : Exception
     {
         $exceptionClass = Helpers::getExceptionClass();
         return new $exceptionClass(static::getDenyMessage() , static::getDenyStatusCode());
     }
 
+    protected function setUserPermissions() : void
+    {
+        $this->userPermissions = $this->loggedUser->permissions() ;
+    }
+
+    protected function checkUserAuthorizationConditions(Authenticatable $user) : void
+    {
+        if(!$user instanceof HasAuthorizablePermissions)
+        {
+            $exceptionClass = Helpers::getExceptionClass();
+            throw new $exceptionClass("The logged user doesn't implement HasAuthorizablePermissions interface ... It is Unable to be authorized " , static::getDenyStatusCode());
+        }
+    }
+
+    protected function checkUserType($user = null) : void
+    {
+        if(!$user)
+        {
+            $exceptionClass = Helpers::getExceptionClass();
+            throw new $exceptionClass("There is no logged user to be authorized");
+        }
+
+        if(!$user instanceof Authenticatable)
+        {
+            $exceptionClass = Helpers::getExceptionClass();
+            throw new $exceptionClass("The logged user doesn't inherit Authenticatable class .. It is Unable to be authorized");
+        }
+    }
+    protected function setValidLoggedUser() : void
+    {
+        $user = auth()->user();
+
+        $this->checkUserType($user);
+
+        /** If No exception is thrown ... the logged user is an Authenticatable object */
+        $this->checkUserAuthorizationConditions($user);
+
+        /** If No exception is thrown ... the logged user is an Authenticatable object and has permissions array */
+        $this->loggedUser = $user;
+    }
+
     protected function setUserProps() : void
     {
-        $this->loggedUser = auth()->user();
-        $this->userPermissions = $this->loggedUser?->permissions() ?? [];
+        $this->setValidLoggedUser();
+        $this->setUserPermissions();
     }
 
     /**
