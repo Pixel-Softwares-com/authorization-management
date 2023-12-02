@@ -1,8 +1,5 @@
 
-    /**
-     * @return bool
-     * @throws JsonException
-     */
+
     public function delete(): bool
     {
         return $this->permissionExaminer->addPermissionToCheck(  --deleting-permission-- )->hasPermissionsOrFail();

@@ -4,7 +4,7 @@ namespace {{ namespace }};
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use AuthorizationManagement\PolicyManagement\Policies\BasePolicy;
-use AuthorizationManagement\Exceptions\JsonException;
+
 
 class {{ class }} extends BasePolicy
 {

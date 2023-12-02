@@ -1,8 +1,4 @@
 
-    /**
-     * @return bool
-     * @throws JsonException
-     */
     public function read(): bool
     {
         return $this->permissionExaminer->addPermissionToCheck( --reading-permission-- )->hasPermissionsOrFail();

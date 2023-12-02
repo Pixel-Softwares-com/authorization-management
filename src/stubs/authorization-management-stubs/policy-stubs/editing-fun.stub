@@ -1,8 +1,4 @@
 
-    /**
-     * @return bool
-     * @throws JsonException
-     */
     public function edit(): bool
     {
         return $this->permissionExaminer->addPermissionToCheck( --editing-permission-- )->hasPermissionsOrFail();
