@@ -4,7 +4,7 @@
 namespace AuthorizationManagement\IndependentGateManagement\IndependentGateContainer;
 
 use AuthorizationManagement\AuthorizationElementContainer;
-use AuthorizationManagement\independentGateManagement\IndependentGates\IndependentGate;
+use AuthorizationManagement\IndependentGateManagement\IndependentGates\IndependentGate;
 
 class IndependentGateContainer extends AuthorizationElementContainer
 {
