@@ -1,0 +1,6 @@
+
+
+    public function create(): bool
+    {
+        return $this->permissionExaminer->addPermissionToCheck( --creating-permission-- )->hasPermissionsOrFail();
+    }

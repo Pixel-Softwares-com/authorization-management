@@ -1,0 +1,5 @@
+
+    public function edit(): bool
+    {
+        return $this->permissionExaminer->addPermissionToCheck( --editing-permission-- )->hasPermissionsOrFail();
+    }

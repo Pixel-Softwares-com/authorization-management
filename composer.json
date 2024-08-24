@@ -1,0 +1,30 @@
+{
+    "name": "muhammedaldrubi/authorization-management",
+    "description": "AuthorizationManagement package",
+    "minimum-stability": "dev",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "pixel company",
+            "email": "email@example.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "laravel/framework": "^8.75",
+        "spatie/laravel-permission": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "AuthorizationManagement\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AuthorizationManagement\\ServiceProviders\\AuthorizationManagementServiceProvider"
+            ]
+        }
+    },
+    "prefer-stable": true
+}

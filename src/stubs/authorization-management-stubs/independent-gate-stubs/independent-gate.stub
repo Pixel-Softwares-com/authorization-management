@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use AuthorizationManagement\IndependentGateManagement\IndependentGates\IndependentGate;
+use Illuminate\Support\Facades\Gate;
+
+class {{ class }}  extends IndependentGate
+{
+
+    public function define() : void
+    {
+         Gate::define("Ability-name", function()
+         {
+                   return $this->permissionExaminer->addPermissionToCheck("permissions-string")->hasPermissionsOrFail();
+         });
+    }
+}
