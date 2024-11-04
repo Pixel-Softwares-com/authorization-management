@@ -1,7 +1,7 @@
 {
     "name": "pixel-softwares/authorization-management",
     "description": "AuthorizationManagement package",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "license": "proprietary",
     "authors": [
         {
