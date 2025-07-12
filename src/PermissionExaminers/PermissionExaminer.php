@@ -10,7 +10,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 
 class PermissionExaminer
 {
-    protected Authenticatable $loggedUser ;
+    protected Authenticatable | HasAuthorizablePermissions $loggedUser ;
     protected array $userPermissions = [];
     protected array $permissionsToControl = [];
     static protected string $denyMessage = "You don't have the permission for browsing this page !";
