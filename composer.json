@@ -11,10 +11,7 @@
     ],
     "require": {
         "php": "^8.0.2",
-        "illuminate/console" : "^12.20.0",
-        "illuminate/Contracts" : "^12.20.0",
-        "illuminate/Support" : "^12.20.0",
-        "illuminate/Auth": "^12.20.0"
+        "laravel/framework" : "^12.20.0"
     },
     "autoload": {
         "psr-4": {
