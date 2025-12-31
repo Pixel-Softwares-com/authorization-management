@@ -20,7 +20,7 @@ class BranchDepartmentPermissionResolver
 {
     use HqRoleChecker, BranchRoleChecker, CheckViewAsPermissions;
 
-    protected int $userId;
+    protected ?int $userId = null;
     protected array $filteredBranchIds = [];
     protected ?string $departmentName = null;
 
