@@ -214,6 +214,32 @@ trait HasDynamicDepartmentRoles
     }
 
     /**
+     * Get the value of an attribute using its mutator (for Laravel appends)
+     * 
+     * This is called by Laravel when accessing appended attributes.
+     * We override it to handle dynamic department role _ids attributes.
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function mutateAttribute($key, $value)
+    {
+        // Check if this is a _ids attribute for a department role
+        if (str_ends_with($key, '_ids')) {
+            $relationName = substr($key, 0, -4);
+            $role = DepartmentRoleRegistry::getByRelation($relationName);
+            
+            if ($role) {
+                return $this->getDepartmentRoleIds($relationName);
+            }
+        }
+
+        // Fall back to parent's mutateAttribute
+        return parent::mutateAttribute($key, $value);
+    }
+
+    /**
      * Get list of all dynamic relations for this model
      * 
      * @return array
