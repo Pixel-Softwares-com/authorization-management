@@ -32,7 +32,8 @@ class BranchDepartmentPermissionResolver
         array $filteredBranchIds = [],
         ?string $departmentName = null
     ) {
-        $this->userId = $userId ?? Auth::id();
+        $this->userId = $userId ;
+        //?? Auth::id();
         $this->filteredBranchIds = $filteredBranchIds;
         $this->departmentName = $departmentName;
     }
