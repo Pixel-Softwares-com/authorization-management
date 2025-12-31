@@ -163,6 +163,23 @@ class DepartmentRoleRegistry
     }
 
     /**
+     * Alias for getDepRoleValues - for backward compatibility
+     */
+    public static function getAllRoleValues(): array
+    {
+        return static::getDepRoleValues();
+    }
+
+    /**
+     * Get dep_role value for a specific role key
+     */
+    public static function getRoleValue(string $key): ?string
+    {
+        $role = static::get($key);
+        return $role['dep_role_value'] ?? null;
+    }
+
+    /**
      * Get all relation names
      */
     public static function getRelationNames(): array

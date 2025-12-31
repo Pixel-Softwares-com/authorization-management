@@ -46,86 +46,86 @@ abstract class BasePolicy extends AuthorizationElement
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(Authenticatable $user): bool
-    {
-        return true;
-    }
+    // public function viewAny(Authenticatable $user): bool
+    // {
+    //     return true;
+    // }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(Authenticatable $user, Model $model): bool
-    {
-        return true;
-    }
+    // public function view(Authenticatable $user, Model $model): bool
+    // {
+    //     return true;
+    // }
 
     /**
      * Determine whether the user can create models.
      */
-    public function create(Authenticatable $user): bool
-    {
-        if ($this->isSuperAdmin($user)) {
-            return true;
-        }
+    // public function create(Authenticatable $user): bool
+    // {
+    //     if ($this->isSuperAdmin($user)) {
+    //         return true;
+    //     }
 
-        return $this->customCreateAuthorization($user);
-    }
+    //     return $this->customCreateAuthorization($user);
+    // }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(Authenticatable $user, Model $model): bool
-    {
-        if ($this->isSuperAdmin($user)) {
-            return true;
-        }
+    // public function update(Authenticatable $user, Model $model): bool
+    // {
+    //     if ($this->isSuperAdmin($user)) {
+    //         return true;
+    //     }
 
-        if ($this->isCreator($user, $model)) {
-            return true;
-        }
+    //     if ($this->isCreator($user, $model)) {
+    //         return true;
+    //     }
 
-        if ($this->hasManagerOrEngineerRoleForModel($user, $model)) {
-            return true;
-        }
+    //     if ($this->hasManagerOrEngineerRoleForModel($user, $model)) {
+    //         return true;
+    //     }
 
-        return $this->customEditAuthorization($user, $model);
-    }
+    //     return $this->customEditAuthorization($user, $model);
+    // }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(Authenticatable $user, Model $model): bool
-    {
-        if ($this->isSuperAdmin($user)) {
-            return true;
-        }
+    // public function delete(Authenticatable $user, Model $model): bool
+    // {
+    //     if ($this->isSuperAdmin($user)) {
+    //         return true;
+    //     }
 
-        if ($this->isCreator($user, $model)) {
-            return true;
-        }
+    //     if ($this->isCreator($user, $model)) {
+    //         return true;
+    //     }
 
-        if ($this->hasManagerOrEngineerRoleForModel($user, $model)) {
-            return true;
-        }
+    //     if ($this->hasManagerOrEngineerRoleForModel($user, $model)) {
+    //         return true;
+    //     }
 
-        return $this->customDeleteAuthorization($user, $model);
-    }
+    //     return $this->customDeleteAuthorization($user, $model);
+    // }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(Authenticatable $user, Model $model): bool
-    {
-        return $this->isSuperAdmin($user);
-    }
+    // public function restore(Authenticatable $user, Model $model): bool
+    // {
+    //     return $this->isSuperAdmin($user);
+    // }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(Authenticatable $user, Model $model): bool
-    {
-        return $this->isSuperAdmin($user);
-    }
+    // public function forceDelete(Authenticatable $user, Model $model): bool
+    // {
+    //     return $this->isSuperAdmin($user);
+    // }
 
     // ================== Role Checking Methods ==================
 
