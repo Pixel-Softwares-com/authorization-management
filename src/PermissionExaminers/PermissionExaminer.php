@@ -14,7 +14,7 @@ class PermissionExaminer
     protected array $userPermissions = [];
     protected array $permissionsToControl = [];
 
-    protected static $unauthorizedAccessExceptionClass = Exception::class;
+    protected static ?string $unauthorizedAccessExceptionClass = null;
     static protected string $denyMessage = "You don't have the permission for browsing this page !";
     static protected int $denyStatusCode = 406;
 
@@ -46,7 +46,7 @@ class PermissionExaminer
         }
     }
 
-    static public function getUnauthorizedAccessExceptionClass()  :string
+    static public function getUnauthorizedAccessExceptionClass()  : ?string
     {
         return static::$unauthorizedAccessExceptionClass;
     }
@@ -54,6 +54,8 @@ class PermissionExaminer
     /**
      * @param int $denyStatusCode
      * @return void
+     * is used with default exception only 
+     * not used with custom UnauthorizedAccessException Class
      */
     static public function setDenyStatusCode(int $denyStatusCode): void
     {
@@ -62,6 +64,9 @@ class PermissionExaminer
 
     /**
      * @param string $denyMessage
+     * 
+     * is used with default exception only 
+     * not used with custom UnauthorizedAccessException Class
      */
     static public function setDenyMessage(string $denyMessage): void
     {
@@ -86,8 +91,13 @@ class PermissionExaminer
 
     static public function getUnauthorizedAccessException() : Exception
     {
-        $exceptionClass = static::getUnauthorizedAccessExceptionClass();
-        return new $exceptionClass(static::getDenyMessage() , static::getDenyStatusCode());
+        if($exceptionClass = static::getUnauthorizedAccessExceptionClass())
+        {
+            return new $exceptionClass();
+        }
+
+        //the default exception used on no custom exception is set
+        return new Exception(static::getDenyMessage() , static::getDenyStatusCode());
     }
 
     /**
