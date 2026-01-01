@@ -325,7 +325,7 @@ abstract class BasePolicy extends AuthorizationElement
     protected function authorizeOrFail(bool $authorized, string $message = 'Unauthorized action'): bool
     {
         if (!$authorized) {
-            abort(403, $message);
+            abort(406, $message);
         }
         return true;
     }
