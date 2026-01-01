@@ -13,6 +13,8 @@ class PermissionExaminer
     protected Authenticatable | HasAuthorizablePermissions $loggedUser ;
     protected array $userPermissions = [];
     protected array $permissionsToControl = [];
+
+    protected static $unauthorizedAccessExceptionClass = Exception::class;
     static protected string $denyMessage = "You don't have the permission for browsing this page !";
     static protected int $denyStatusCode = 406;
 
@@ -34,6 +36,19 @@ class PermissionExaminer
             $this->addPermissionToCheck($permission);
         }
         return $this;
+    }
+
+    static public function setUnauthorizedAccessExceptionClass(string $exceptionClass) : void
+    {
+        if(is_subclass_of($exceptionClass , Exception::class))
+        {
+            static::$unauthorizedAccessExceptionClass = $exceptionClass;
+        }
+    }
+
+    static public function getUnauthorizedAccessExceptionClass()  :string
+    {
+        return static::$unauthorizedAccessExceptionClass;
     }
 
     /**
@@ -69,10 +84,19 @@ class PermissionExaminer
         return static::$denyMessage;
     }
 
+    static public function getUnauthorizedAccessException() : Exception
+    {
+        $exceptionClass = static::getUnauthorizedAccessExceptionClass();
+        return new $exceptionClass(static::getDenyMessage() , static::getDenyStatusCode());
+    }
+
+    /**
+     * @deprecated
+     * will be removed later
+     */
     static public function getUnAuthenticatingException() : Exception
     {
-        $exceptionClass = Helpers::getExceptionClass();
-        return new $exceptionClass(static::getDenyMessage() , static::getDenyStatusCode());
+        return static::getUnauthorizedAccessException();
     }
 
     protected function setUserPermissions() : void

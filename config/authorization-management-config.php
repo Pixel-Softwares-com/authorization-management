@@ -23,17 +23,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Custom Exception Class
-    |--------------------------------------------------------------------------
-    |
-    | Specify a custom exception class for authorization failures.
-    | Leave empty to use the default Exception class.
-    |
-    */
-    "custom-exception-class" => "",
-
-    /*
-    |--------------------------------------------------------------------------
     | Department Roles Configuration
     |--------------------------------------------------------------------------
     |
