@@ -39,6 +39,7 @@ class DepartmentRoleRegistry
 
     /**
      * Load all department roles from configuration
+     * Only loads default_roles (no custom_roles merging)
      */
     protected function loadRoles(): void
     {
@@ -50,10 +51,10 @@ class DepartmentRoleRegistry
             return;
         }
 
+        // Only load default roles (custom roles removed from merging)
         $defaultRoles = collect($this->config['default_roles'] ?? []);
-        $customRoles = collect($this->config['custom_roles'] ?? []);
 
-        $this->roles = $defaultRoles->merge($customRoles)
+        $this->roles = $defaultRoles
             ->filter(fn($role) => $role['enabled'] ?? false)
             ->map(function ($role, $key) {
                 return $this->normalizeRole($key, $role);
@@ -216,27 +217,11 @@ class DepartmentRoleRegistry
     }
 
     /**
-     * Get default roles only
+     * Get default roles only (same as all() since we only load default roles)
      */
     public static function getDefaultRoles(): Collection
     {
-        $defaultKeys = array_keys(config('authorization-management-config.department_roles.default_roles', []));
-        
-        return static::instance()->roles->filter(
-            fn($role, $key) => in_array($key, $defaultKeys)
-        );
-    }
-
-    /**
-     * Get custom roles only
-     */
-    public static function getCustomRoles(): Collection
-    {
-        $customKeys = array_keys(config('authorization-management-config.department_roles.custom_roles', []));
-        
-        return static::instance()->roles->filter(
-            fn($role, $key) => in_array($key, $customKeys)
-        );
+        return static::all();
     }
 
     /**
@@ -268,6 +253,113 @@ class DepartmentRoleRegistry
         }
 
         return $role1['hierarchy_level'] > $role2['hierarchy_level'];
+    }
+
+    /**
+     * Get relation name for a specific role key dynamically
+     * Returns the relation name (e.g., 'managers' for 'manager')
+     * 
+     * @param string $roleKey The role key (e.g., 'manager', 'engineer', 'rep')
+     * @return string|null The relation name or null if role not found
+     */
+    public static function getRelationName(string $roleKey): ?string
+    {
+        $role = static::get($roleKey);
+        return $role['relation'] ?? null;
+    }
+
+    /**
+     * Get relation names for multiple role keys dynamically
+     * 
+     * @param array $roleKeys Array of role keys (e.g., ['manager', 'engineer'])
+     * @return array Array of relation names (e.g., ['managers', 'engineers'])
+     */
+    public static function getRelationNamesForKeys(array $roleKeys): array
+    {
+        $relations = [];
+        
+        foreach ($roleKeys as $key) {
+            $role = static::get($key);
+            if ($role) {
+                $relations[] = $role['relation'];
+            }
+        }
+
+        return array_unique($relations);
+    }
+
+    /**
+     * Get the manager relation name dynamically
+     */
+    public static function getManagerRelation(): ?string
+    {
+        return static::getRelationName('manager');
+    }
+
+    /**
+     * Get the engineer relation name dynamically
+     */
+    public static function getEngineerRelation(): ?string
+    {
+        return static::getRelationName('engineer');
+    }
+
+    /**
+     * Get the rep relation name dynamically
+     */
+    public static function getRepRelation(): ?string
+    {
+        return static::getRelationName('rep');
+    }
+
+    /**
+     * Get manager and engineer relations dynamically
+     * Returns default roles only
+     * 
+     * @return array
+     */
+    public static function getManagerAndEngineerRelations(): array
+    {
+        return static::getRelationNamesForKeys(['manager', 'engineer']);
+    }
+
+    /**
+     * Get all default role relations (manager, engineer, rep)
+     * 
+     * @return array
+     */
+    public static function getAllDefaultRoleRelations(): array
+    {
+        return static::getRelationNamesForKeys(['manager', 'engineer', 'rep']);
+    }
+
+    /**
+     * Merge custom role relations with all default role relations
+     * Use this when you need to add custom roles alongside defaults
+     * 
+     * @param array $customRoleRelations Custom role relation names to merge (e.g., ['supervisors', 'team_leads'])
+     * @return array Combined array of default and custom role relations
+     */
+    public static function mergeCustomRolesWithDefaults(array $customRoleRelations): array
+    {
+        $defaultRelations = static::getAllDefaultRoleRelations();
+        
+        if (empty($customRoleRelations)) {
+            return $defaultRelations;
+        }
+
+        return array_unique(array_merge($defaultRelations, $customRoleRelations));
+    }
+
+    /**
+     * Get the default department name from configuration
+     * This is used in policies as the fallback department
+     * 
+     * @return string The default department name
+     */
+    public static function getDefaultDepartmentName(): string
+    {
+        return config('authorization-management-config.department_roles.default_department_name', 'Electric');
     }
 
     /**

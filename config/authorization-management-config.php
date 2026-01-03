@@ -154,5 +154,16 @@ return [
             'enabled' => true,
             'ttl' => 3600, // 1 hour
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Default Department Name
+        |--------------------------------------------------------------------------
+        |
+        | The default department name to use in policies when no specific
+        | department is specified. This can be overridden in child policies.
+        |
+        */
+        'default_department_name' => 'IT',
     ],
 ];

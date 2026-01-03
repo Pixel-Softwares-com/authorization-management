@@ -131,6 +131,11 @@ abstract class BasePolicy extends AuthorizationElement
 
     /**
      * Check if user has manager or engineer role for the model's branch/HQ
+     * Uses default roles only (manager, engineer)
+     * 
+     * @param Authenticatable $user
+     * @param Model $model
+     * @return bool
      */
     protected function hasManagerOrEngineerRoleForModel(Authenticatable $user, Model $model): bool
     {
@@ -141,22 +146,30 @@ abstract class BasePolicy extends AuthorizationElement
         }
 
         $mainBranchId = AuthorizationModelManager::getMainBranchId();
+        
+        // Get role relations dynamically from registry (default roles only)
+        $roleRelations = DepartmentRoleRegistry::getManagerAndEngineerRelations();
 
         if ($branchId === $mainBranchId) {
             return $this->departmentPermissionResolver
                 ->forUser($user->id)
-                ->forDepartment($this->getDepartmentName($model))
-                ->hasAnyHqRole(['managers', 'engineers']);
+                ->forDepartment($this->getDefaultDepartmentName($model))
+                ->hasAnyHqRole($roleRelations);
         }
 
         return $this->departmentPermissionResolver
             ->forUser($user->id)
-            ->forDepartment($this->getDepartmentName($model))
-            ->hasAnyBranchRole($branchId, ['managers', 'engineers']);
+            ->forDepartment($this->getDefaultDepartmentName($model))
+            ->hasAnyBranchRole($branchId, $roleRelations);
     }
 
     /**
      * Check if user has manager role specifically
+     * Uses manager role only from default roles
+     * 
+     * @param Authenticatable $user
+     * @param Model $model
+     * @return bool
      */
     protected function hasManagerRoleForModel(Authenticatable $user, Model $model): bool
     {
@@ -167,29 +180,36 @@ abstract class BasePolicy extends AuthorizationElement
         }
 
         $mainBranchId = AuthorizationModelManager::getMainBranchId();
+        
+        // Get manager relation dynamically from registry
+        $managerRelation = DepartmentRoleRegistry::getManagerRelation();
+        if (!$managerRelation) {
+            return false;
+        }
 
         if ($branchId === $mainBranchId) {
             return $this->departmentPermissionResolver
                 ->forUser($user->id)
-                ->forDepartment($this->getDepartmentName($model))
-                ->hasAnyHqRole(['managers']);
+                ->forDepartment($this->getDefaultDepartmentName($model))
+                ->hasAnyHqRole([$managerRelation]);
         }
 
         return $this->departmentPermissionResolver
             ->forUser($user->id)
-            ->forDepartment($this->getDepartmentName($model))
-            ->hasAnyBranchRole($branchId, ['managers']);
+            ->forDepartment($this->getDefaultDepartmentName($model))
+            ->hasAnyBranchRole($branchId, [$managerRelation]);
     }
 
     /**
      * Check if user has any of the specified roles for the model
+     * Merges custom roles with all default roles from configuration
      * 
      * @param Authenticatable $user
      * @param Model $model
-     * @param array $roleRelations e.g., ['managers', 'engineers', 'reps']
+     * @param array $customRoles Custom role relations to merge with defaults e.g., ['supervisors', 'team_leads']
      * @return bool
      */
-    protected function hasAnyRoleForModel(Authenticatable $user, Model $model, array $roleRelations): bool
+    protected function hasAnyRoleForModel(Authenticatable $user, Model $model, array $customRoles = []): bool
     {
         $branchId = $model->branch_id ?? null;
 
@@ -198,24 +218,32 @@ abstract class BasePolicy extends AuthorizationElement
         }
 
         $mainBranchId = AuthorizationModelManager::getMainBranchId();
+        
+        // Merge custom roles with all default roles from configuration
+        $roleRelations = DepartmentRoleRegistry::mergeCustomRolesWithDefaults($customRoles);
 
         if ($branchId === $mainBranchId) {
             return $this->departmentPermissionResolver
                 ->forUser($user->id)
-                ->forDepartment($this->getDepartmentName($model))
+                ->forDepartment($this->getDefaultDepartmentName($model))
                 ->hasAnyHqRole($roleRelations);
         }
 
         return $this->departmentPermissionResolver
             ->forUser($user->id)
-            ->forDepartment($this->getDepartmentName($model))
+            ->forDepartment($this->getDefaultDepartmentName($model))
             ->hasAnyBranchRole($branchId, $roleRelations);
     }
 
     /**
      * Check ViewAs permissions for the model
+     * Uses all default roles from configuration
+     * 
+     * @param Authenticatable $user
+     * @param Model $model
+     * @return bool
      */
-    protected function hasViewAsPermission(Authenticatable $user, Model $model, ?array $roles = null): bool
+    protected function hasViewAsPermission(Authenticatable $user, Model $model): bool
     {
         $viewAs = request()->input('view_as');
 
@@ -223,11 +251,12 @@ abstract class BasePolicy extends AuthorizationElement
             return true;
         }
 
-        $roles = $roles ?? ['managers', 'engineers', 'reps'];
+        // Get default role relations dynamically
+        $roles = DepartmentRoleRegistry::getAllDefaultRoleRelations();
 
         $resolver = $this->departmentPermissionResolver
             ->forUser($user->id)
-            ->forDepartment($this->getDepartmentName($model));
+            ->forDepartment($this->getDefaultDepartmentName($model));
 
         if (in_array($viewAs, ['private', 'draft'])) {
             if ($resolver->hasAnyHqRole($roles)) {
@@ -286,10 +315,13 @@ abstract class BasePolicy extends AuthorizationElement
     /**
      * Get department name for the model
      * Override in child policies to specify the department
+     * 
+     * @param Model $model
+     * @return string
      */
-    protected function getDepartmentName(Model $model): string
+    protected function getDefaultDepartmentName(Model $model): string
     {
-        return 'Electric';
+        return DepartmentRoleRegistry::getDefaultDepartmentName();
     }
 
     /**
@@ -346,5 +378,74 @@ abstract class BasePolicy extends AuthorizationElement
     protected function isValidDepartmentRole(string $roleKey): bool
     {
         return DepartmentRoleRegistry::isValidRole($roleKey);
+    }
+
+    /**
+     * Get specific role relation dynamically
+     * 
+     * @param string $roleKey The role key (e.g., 'manager', 'engineer', 'rep')
+     * @return string|null
+     */
+    protected function getRoleRelation(string $roleKey): ?string
+    {
+        return DepartmentRoleRegistry::getRelationName($roleKey);
+    }
+
+    /**
+     * Get manager relation dynamically
+     */
+    protected function getManagerRelation(): ?string
+    {
+        return DepartmentRoleRegistry::getManagerRelation();
+    }
+
+    /**
+     * Get engineer relation dynamically
+     */
+    protected function getEngineerRelation(): ?string
+    {
+        return DepartmentRoleRegistry::getEngineerRelation();
+    }
+
+    /**
+     * Get rep relation dynamically
+     */
+    protected function getRepRelation(): ?string
+    {
+        return DepartmentRoleRegistry::getRepRelation();
+    }
+
+    /**
+     * Get all default role relations (manager, engineer, rep) dynamically
+     * Returns default roles only
+     * 
+     * @return array
+     */
+    protected function getAllDefaultRoles(): array
+    {
+        return DepartmentRoleRegistry::getAllDefaultRoleRelations();
+    }
+
+    /**
+     * Get manager and engineer relations dynamically
+     * Returns default roles only
+     * 
+     * @return array
+     */
+    protected function getManagerAndEngineerRoles(): array
+    {
+        return DepartmentRoleRegistry::getManagerAndEngineerRelations();
+    }
+
+    /**
+     * Merge custom roles with all default role relations
+     * Use this when you need to include custom roles with defaults
+     * 
+     * @param array $customRoles Custom role relations to merge with defaults
+     * @return array
+     */
+    protected function mergeWithDefaultRoles(array $customRoles): array
+    {
+        return DepartmentRoleRegistry::mergeCustomRolesWithDefaults($customRoles);
     }
 }
